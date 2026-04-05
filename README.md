@@ -1,0 +1,6 @@
+# Overview
+- This repository has FreeRTOS v10.5.1 port for Infineon Aurix TriCore. Official FreeRTOS homepage is here(https://www.freertos.org/) where you can download the latest kernel of FreeRTOS.
+- This port originates from https://www.cnblogs.com/uestcliming666/p/16223780.html and has been adapted to build in ADS(AURIX Development Studio) v1.10.28. ADS is freely available and you can download it here(https://www.infineon.com/design-resources/platforms/aurix-software-tools/aurix-tools/aurix-development-studio). 
+- The original port requires HighTEC gcc compiler, which is not free although this link provides free entry toolchain(https://free-entry-toolchain.hightec-rt.com/).
+- This port was tested in Aurix TC297 TFT Board (https://www.infineon.com/evaluation-board/KIT-AURIX-TC297-TFT). The board manual, infineon-tc2x7-applicationkitmanual-usermanual-en.pdf, is found here in this repo.
+- When successfully building and flashing, user LED 1(P13.0) and 2(P13.1) toggles every 250ms and 500ms respectively.
