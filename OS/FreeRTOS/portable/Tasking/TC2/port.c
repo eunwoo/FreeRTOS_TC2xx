@@ -324,8 +324,6 @@ void prvSetupTimerInterrupt( void )
 	MODULE_STM0.OCS.U = ( 1UL << 28 ) | ( 2UL << 24 );
 }
 /*-----------------------------------------------------------*/
-volatile unsigned int dbg1, dbg2;
-
 
 #ifdef IFX_USE_SW_MANAGED_INT
 static void prvSystemTickHandler( int iArg )
@@ -410,11 +408,12 @@ IFX_INTERRUPT( prvSystemTickHandler, 0, configKERNEL_INTERRUPT_PRIORITY )
 		_disable();
 		_dsync();
 #ifdef IFX_USE_SW_MANAGED_INT
-        xUpperCSA = _mfcr( CPU_PCXI );                      //uint32 xLowerCSA;
-        pxUpperCSA = portCSA_TO_ADDRESS( xUpperCSA );       //xLowerCSA = portCSA_TO_ADDRESS( _mfcr(CPU_PCXI) );
-        *pxCurrentTCB = pxUpperCSA[ 0 ];                    //*pxCurrentTCB = xLowerCSA;
-        vTaskSwitchContext();                               //xLowerCSA = *pxCurrentTCB;
-        pxUpperCSA[ 0 ] = *pxCurrentTCB;                    //_mtcr( CPU_PCXI, xLowerCSA );
+        xUpperCSA = _mfcr( CPU_PCXI );                      // PCXI points to CSA created when prvSystemTickHandler function is called in IfxCpu_Irq_intVecTable function
+        pxUpperCSA = portCSA_TO_ADDRESS( xUpperCSA );       // pxUpperCSA = prvSystemTickHandler
+                                                            // pxUpperCSA[ 0 ] contains lower context saved by svlcx instruction
+        *pxCurrentTCB = pxUpperCSA[ 0 ];                    // *pxCurrentTCB = lower context. Note that lower context points to upper context.
+        vTaskSwitchContext();                               // *pxCurrentTCB is saved and new task is selected
+        pxUpperCSA[ 0 ] = *pxCurrentTCB;                    // pxUpperCSA[ 0 ] now points to new lower context
 #else
         *pxCurrentTCB = _mfcr(CPU_PCXI);
         vTaskSwitchContext();
